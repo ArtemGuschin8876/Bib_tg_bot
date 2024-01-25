@@ -1,0 +1,108 @@
+// ОБРАБОТКА КЛАВИАТУРЫ НЕ РАБОТАЕТ В ПРИВАТЕ, НО МОЖНО ЧЕРЕЗ КОМАНДЫ
+switch text {
+		case "open" :
+			msg.ReplyMarkup = nymericKeyboard
+		case "close":
+			msg.ReplyMarkup = tgbotapi.NewRemoveKeyboard(true)
+		}
+
+
+// НУМЕРИК КЛАВИАТУРА
+var	nymericKeyboard = tgbotapi.NewReplyKeyboard(
+		tgbotapi.NewKeyboardButtonRow(
+			tgbotapi.NewKeyboardButton("1"),
+			tgbotapi.NewKeyboardButton("2"),
+			tgbotapi.NewKeyboardButton("3"),
+		),
+		tgbotapi.NewKeyboardButtonRow(
+			tgbotapi.NewKeyboardButton("4"),
+			tgbotapi.NewKeyboardButton("5"),
+			tgbotapi.NewKeyboardButton("6"),
+		),
+	)
+
+КЛАВИАТУРЫ ИНЛАЙН
+ for update := range updates 
+        // Check if we've gotten a message update.
+        if update.Message != nil {
+            // Construct a new message from the given chat ID and containing
+            // the text that we received.
+            msg := tgbotapi.NewMessage(update.Message.Chat.ID, update.Message.Text)
+
+            // If the message was open, add a copy of our numeric keyboard.
+            switch update.Message.Text {
+            case "open":
+                msg.ReplyMarkup = numericKeyboard
+
+            }
+
+            // Send the message.
+            if _, err = bot.Send(msg); err != nil {
+                panic(err)
+            }
+        } else if update.CallbackQuery != nil {
+            // Respond to the callback query, telling Telegram to show the user
+            // a message with the data received.
+            callback := tgbotapi.NewCallback(update.CallbackQuery.ID, update.CallbackQuery.Data)
+            if _, err := bot.Request(callback); err != nil {
+                panic(err)
+            }
+
+            // And finally, send a message containing the data received.
+            msg := tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, update.CallbackQuery.Data)
+            if _, err := bot.Send(msg); err != nil {
+                panic(err)
+            }
+        }
+
+
+ОБРАБОТКА КОМАНД 
+if !update.Message.IsCommand() {
+			continue
+		}
+И РЕАЛИЗАЦИЯ КОМАНД 
+switch update.Message.Command() {
+		case "help":
+			msg.Text = "Now we have /sayHi or /sayBye"
+		case "sayHi":
+			msg.Text = "Hello!"
+		case "sayBye":
+			msg.Text = "Goodbye!"
+		case "open":
+			
+		case "close":
+		
+		default :
+			msg.Text = "Sorry :( But I dont know this command :("	
+		}
+
+
+НЕИЗВЕСТНОСТЬ И НЕПОНЯТКИ
+if update.Message != nil {
+
+			msg := tgbotapi.NewMessage(chatID, text)
+
+			switch text {
+			case "open":
+				msg.ReplyMarkup = newInlineKeyboard
+			}
+			
+			if _, err := bot.Send(msg); err != nil{
+				log.Println("[ERR] Error in bot.Send()")
+				}
+		
+		
+		} else if update.CallbackQuery != nil {
+			callback := tgbotapi.NewCallback(update.CallbackQuery.ID, update.CallbackQuery.Data)
+			
+			if _, err := bot.Request(callback); err != nil{
+				log.Println("Error callback request")
+			}
+
+			msg := tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, update.CallbackQuery.Data)
+
+			if _, err := bot.Send(msg); err != nil{
+				log.Println("[ERR]A [2] Error in bot.Send()")
+				}
+		
+		}
