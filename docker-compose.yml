@@ -1,0 +1,14 @@
+
+version: '3.7'
+
+services:
+  bib_bot:
+    image: artemgo/bib_bot:0.1
+    hostname: bib_bot
+    entrypoint: "/app/Bib_bot"
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200m"
+        max-file: "10"
