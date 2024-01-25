@@ -9,7 +9,7 @@ RUN apt update && apt install  nano curl  net-tools -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-RUN go build
+RUN go build -o bib_bot
 
 FROM bitnami/minideb:latest
 
@@ -19,6 +19,6 @@ RUN apt update && apt install nano curl -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-COPY --from=base /app/Bib_bot /app
+COPY --from=base /app/bib_bot /app
 
 COPY --from=base /app/.env  /app/.env
