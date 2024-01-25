@@ -5,11 +5,11 @@ WORKDIR /app
 
 COPY . /app
 
-RUN apt update && apt install make nano curl telnet net-tools -y \
+RUN apt update && apt install  nano curl  net-tools -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-RUN make
+RUN go build
 
 FROM bitnami/minideb:latest
 
