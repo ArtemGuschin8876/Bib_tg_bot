@@ -3,10 +3,12 @@ package translate
 import (
 	"context"
 	"fmt"
+	"io"
 	"log"
 	"os"
 
-	"cloud.google.com/go/translate"
+	translate "cloud.google.com/go/translate/apiv3"
+	"cloud.google.com/go/translate/apiv3/translatepb"
 	"github.com/joho/godotenv"
 	"golang.org/x/text/language"
 	"google.golang.org/api/option"
@@ -19,11 +21,60 @@ func init() {
 	}
 }
 
-// TranslateText переводит текст из одного языка на другой
-func TranslateText(text, sourceLang, targetLang string) (string, error) {
-	translateAPIKey := os.Getenv("TOKEN_TRANSLATE")
 
+func detectLanguage(w io.Writer,  text string) (string,error) {
+	 projectID := os.Getenv("ID_PROJECT")
+	 text = "Hello, world!"
+
+	 ctx := context.Background()
+	 client, err := translate.NewTranslationClient(ctx)
+	 if err != nil {
+		 return "", fmt.Errorf("NewTranslationClient: %w", err)
+	 }
+
+	defer client.Close()
+
+	req := &translatepb.DetectLanguageRequest{
+			Parent:   fmt.Sprintf("projects/%s/locations/global", projectID),
+			MimeType: "text/plain", // Mime types: "text/plain", "text/html"
+			Source: &translatepb.DetectLanguageRequest_Content{
+					Content: text,
+			},
+	}
+
+	
+	  resp, err := client.DetectLanguage(ctx, req)
+    if err != nil {
+        return "", fmt.Errorf("DetectLanguage: %w", err)
+    }
+
+	// Display list of detected languages sorted by detection confidence.
+	// The most probable language is first.
+	for _, language := range resp.GetLanguages() {
+			// The language detected.
+			fmt.Fprintf(w, "Language code: %v\n", language.GetLanguageCode())
+			// Confidence of detection result for this language.
+			fmt.Fprintf(w, "Confidence: %v\n", language.GetConfidence())
+	}
+
+	return "", fmt.Errorf("No languages detected")
+
+}
+
+
+
+
+func TranslateText(text, sourceLang, targetLang string) (string, error) {
 	ctx := context.Background()
+
+	sourceLang, err := detectLanguage(nil,text)
+	if err != nil {
+		return "", fmt.Errorf("Error detecting language: %w", err)
+	}
+
+	translateAPIKey := os.Getenv("TOKEN_TRANSLATE")
+	
+
 
 	client, err := translate.NewClient(ctx, option.WithAPIKey(translateAPIKey))
 	if err != nil {
@@ -32,7 +83,7 @@ func TranslateText(text, sourceLang, targetLang string) (string, error) {
 	defer client.Close()
 
 	// Вызов Google Translate API
-	translation, err := client.Translate(ctx, []string{text}, language.Russian, nil)
+	translation, err := client.Translate(ctx, []string{text}, language.MustParse(sourceLang), nil)
 	if err != nil {
 		log.Fatal("[ERR] Unable to translate text:", err)
 		return "", err

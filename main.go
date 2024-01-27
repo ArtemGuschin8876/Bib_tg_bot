@@ -49,10 +49,10 @@ func main(){
 			msgText = "Здесь весь лист"
 		case "help":
 			msgText = "Тут помощь"	
-		case "translate":
+		case "tr":
 			text := strings.TrimSpace(update.Message.CommandArguments())
 				if text == "" {
-					msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Пожалуйста, введите текст для перевода после команды /translation.")
+					msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Пожалуйста, введите текст для перевода после команды /tr.")
 					bot.Send(msg)
 					continue
 				}
