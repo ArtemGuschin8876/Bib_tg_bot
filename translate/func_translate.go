@@ -10,7 +10,6 @@ import (
 	translate "cloud.google.com/go/translate/apiv3"
 	"cloud.google.com/go/translate/apiv3/translatepb"
 	"github.com/joho/godotenv"
-	"golang.org/x/text/language"
 	"google.golang.org/api/option"
 )
 
@@ -22,7 +21,7 @@ func init() {
 }
 
 
-func detectLanguage(w io.Writer,  text string) (string,error) {
+func detectLanguage(w io.Writer,  text string, req *translatepb.DetectLanguageRequest) (string,error) {
 	 projectID := os.Getenv("ID_PROJECT")
 	 text = "Hello, world!"
 
@@ -34,7 +33,7 @@ func detectLanguage(w io.Writer,  text string) (string,error) {
 
 	defer client.Close()
 
-	req := &translatepb.DetectLanguageRequest{
+	req = &translatepb.DetectLanguageRequest{
 			Parent:   fmt.Sprintf("projects/%s/locations/global", projectID),
 			MimeType: "text/plain", // Mime types: "text/plain", "text/html"
 			Source: &translatepb.DetectLanguageRequest_Content{
@@ -67,7 +66,7 @@ func detectLanguage(w io.Writer,  text string) (string,error) {
 func TranslateText(text, sourceLang, targetLang string) (string, error) {
 	ctx := context.Background()
 
-	sourceLang, err := detectLanguage(nil,text)
+	sourceLang, err := detectLanguage(nil,text, &translatepb.DetectLanguageRequest{})
 	if err != nil {
 		return "", fmt.Errorf("Error detecting language: %w", err)
 	}
@@ -76,14 +75,14 @@ func TranslateText(text, sourceLang, targetLang string) (string, error) {
 	
 
 
-	client, err := translate.NewClient(ctx, option.WithAPIKey(translateAPIKey))
+	client, err := translate.NewTranslationClient(ctx, option.WithAPIKey(translateAPIKey))
 	if err != nil {
 		log.Fatal("[ERR] Unable to create translation client:", err)
 	}
 	defer client.Close()
 
 	// Вызов Google Translate API
-	translation, err := client.Translate(ctx, []string{text}, language.MustParse(sourceLang), nil)
+	translation, err := client.TranslateText(ctx, &translatepb.TranslateTextRequest{})
 	if err != nil {
 		log.Fatal("[ERR] Unable to translate text:", err)
 		return "", err
@@ -91,6 +90,6 @@ func TranslateText(text, sourceLang, targetLang string) (string, error) {
 
 	fmt.Printf("[DEBUG] Google Translate API Response: %+v\n", translation)
 
-	return translation[0].Text, nil
+	return translation.Translations[0].String(), nil
 }
 
