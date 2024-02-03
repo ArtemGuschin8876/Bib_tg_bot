@@ -1,19 +1,20 @@
-	package main
+package main
 
-	import (
-		"fmt"
-		"log"
-		"os"
-		"projects/BIb_bot/translate"
-		"strings"
+import (
+	"fmt"
+	"log"
+	"os"
+	"projects/BIb_bot/translate"
+	"strings"
 
-		tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
-		"github.com/joho/godotenv"
-	)
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"github.com/joho/godotenv"
+)
 
 	var (
-
 		msgText string
+		targetLanguage string
+		sourceLanguage string
 	)
 	func main(){
 		err := godotenv.Load()
@@ -21,7 +22,7 @@
 			log.Fatal("[ERR] Error loading .env file")
 		}
 
-		token := os.Getenv("CHECK_BOT")
+		token := os.Getenv("TOKEN_BOT")
 		
 
 		bot, err := tgbotapi.NewBotAPI(token)
@@ -30,7 +31,7 @@
 		}
 
 		bot.Debug = true
-
+		
 		log.Printf("Authorized on account %s", bot.Self.UserName)
 
 		
@@ -45,28 +46,43 @@
 
 			if update.Message.IsCommand(){
 			switch update.Message.Command(){
-			case "list":
+			case "Todo":
 				msgText = "Здесь весь лист"
 			case "help":
 				msgText = "Тут помощь"	
 			case "tr":
 				text := strings.TrimSpace(update.Message.CommandArguments())
 					if text == "" {
-						msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Пожалуйста, введите текст для перевода после команды /tr.")
+						msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Пожалуйста, введите текст для перевода с командой /tr.")
+						bot.Send(msg)
+						continue
+					}
+					
+					detectedLanguage, err := translate.DetectLanguage(text)
+					if err != nil {
+						log.Printf("[DEBUG] Error detecting language: %v", err)
+						msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Произошла ошибка при определении языка текста.")
 						bot.Send(msg)
 						continue
 					}
 
-					log.Printf("[DEBUG] Переводим текст: %s", text)
-
-					translatedText, err := translate.TranslateText(text, "en", "ru")
+					sourceLanguage = detectedLanguage.Language.String()
+					
+					
+					if sourceLanguage == "en" {
+						targetLanguage = "ru"
+					} else if sourceLanguage == "ru" {
+						targetLanguage = "en"
+					}
+				
+					translatedText, err := translate.TranslateTextWithModel(targetLanguage, text, "nmt")
 					if err != nil {
-						log.Printf("Error translating text: %v", err)
+						log.Printf("[DEBUG] Error translating text: %v", err)
 						msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Произошла ошибка при переводе текста.")
 						bot.Send(msg)
-					} else {
-						log.Printf("[DEBUG] Получен переведенный текст: %s", translatedText)
-						msg := tgbotapi.NewMessage(update.Message.Chat.ID, fmt.Sprintf("Переведенный текст:\n%s", translatedText))
+					}else{
+						log.Printf("[DEBUG] Переведённый текст: %s", translatedText)
+						msg := tgbotapi.NewMessage(update.Message.Chat.ID, fmt.Sprintf("Перевод:\n%s", translatedText))
 						bot.Send(msg)
 					}
 			default :
@@ -81,6 +97,7 @@
 				log.Printf("Error sending message: %v", err)
 			}
 		}
+		
 		
 	}
 
