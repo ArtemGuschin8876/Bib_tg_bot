@@ -18,7 +18,10 @@ func HandleCommand(update tgbotapi.Update) string {
 	case "help":
 		return "Тут помощиии"
 	case "tr":
+		fmt.Println("3")
 		return HandleTranslateCommand(update)
+	case "start":
+		return "Привет я BiB, выбери команду!"
 	default:
 		return "Ничего не происходит"
 	}
@@ -43,7 +46,7 @@ func HandleTranslateCommand(update tgbotapi.Update) string {
 	targetLanguage := translate.DetermineTargetLanguage(sourceLanguage)
 
 	translatedText, err := translate.TranslateTextWithModel(targetLanguage, text, "nmt")
-
+	fmt.Println("2")
 	if err != nil {
 		log.Printf("[DEBUG] Ошибка при переводе текста: %v", err)
 		return "Произошла ошибка при переводе текста."
@@ -52,4 +55,7 @@ func HandleTranslateCommand(update tgbotapi.Update) string {
 	log.Printf("[DEBUG] Переведённый текст: %s", translatedText)
 
 	return fmt.Sprintf("Перевод:\n%s", translatedText)
+	
 }
+
+

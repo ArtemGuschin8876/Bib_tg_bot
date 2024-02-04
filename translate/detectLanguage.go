@@ -7,7 +7,6 @@ import (
 	"cloud.google.com/go/translate"
 )
 
-
 func DetectLanguage(text string) (*translate.Detection, error) {
 	// text := "こんにちは世界"
 	ctx := context.Background()

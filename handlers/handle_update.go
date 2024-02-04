@@ -12,11 +12,14 @@ func HandleUpdate(update tgbotapi.Update, bot *tgbotapi.BotAPI) {
 	if update.Message == nil {
 		return
 	}
+
 	if update.Message.IsCommand() {
 		msgText = HandleCommand(update)
 	} else {
-		msgText = "Ничего не происходит"
+		msgText = "Не понимаю"
 	}
 
 	SendMessage(update.Message.Chat.ID, msgText, bot)
 }
+
+

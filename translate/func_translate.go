@@ -32,5 +32,6 @@ func TranslateTextWithModel(targetLanguage, text, model string) (string, error) 
 	if len(resp) == 0 {
 			return "", nil
 	}
+	fmt.Println("11")
 	return resp[0].Text, nil
 }

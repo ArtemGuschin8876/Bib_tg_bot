@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	botcreateauth "projects/BIb_bot/bot_create_auth"
@@ -29,7 +30,7 @@ func main() {
 
 	for update := range updates {
 
-		userID := update.Message.Chat.ID
+		// userID := update.Message.Chat.ID
 
 		handlers.HandleUpdate(update, bot)
 
@@ -38,9 +39,9 @@ func main() {
 			handlers.HandleCommand(update)
 
 		}
-
-		handlers.SendMessage(userID, msgText, bot)
-
+		fmt.Println("4")
+		// handlers.SendMessage(userID, msgText, bot)
+		fmt.Println("5")
 	}
 
 }
