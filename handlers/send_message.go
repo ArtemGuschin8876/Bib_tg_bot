@@ -5,7 +5,7 @@ import (
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
-
+// SendMessage отправляет сообщение
 func SendMessage(userID int64, msgText string, bot *tgbotapi.BotAPI) {
 	msg := tgbotapi.NewMessage(userID, msgText)
 

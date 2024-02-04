@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   bib_bot:
-    image: artemgo/bib_bot:1.0
+    image: artemgo/bib_bot:0.4
     hostname: bib_bot
     entrypoint: "/app/bib_bot"
     restart: unless-stopped
