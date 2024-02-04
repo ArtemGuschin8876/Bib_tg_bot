@@ -18,7 +18,7 @@ var (
 func main() {
 	botcreateauth.LoadEnvFile(err)
 
-	token := os.Getenv("CHECK_BOT")
+	token := os.Getenv("TOKEN_BOT")
 
 	bot := botcreateauth.CreateBot(token)
 
