@@ -7,21 +7,26 @@ import (
 	"github.com/joho/godotenv"
 )
 
+var ()
 
-func LoadEnvFile(err error){
+func LoadEnvFile(err error) {
+
 	err = godotenv.Load()
-		if err != nil {
-			log.Fatal("[ERR] Error loading .env file")
-		}
+
+	if err != nil {
+		log.Fatal("[ERR] Error loading .env file")
+	}
 }
 
 func CreateBot(token string) *tgbotapi.BotAPI {
-	 bot, err := tgbotapi.NewBotAPI(token)
-		if err != nil {
-			log.Fatal("[ERR] The bot has not been created")
-		}
-		
+
+	bot, err := tgbotapi.NewBotAPI(token)
+
+	if err != nil {
+		log.Fatal("[ERR] The bot has not been created")
+	}
+
+	bot.Debug = true
+
 	return bot
 }
-
-

@@ -7,16 +7,16 @@ import (
 var (
 	msgText string
 )
+
 func HandleUpdate(update tgbotapi.Update, bot *tgbotapi.BotAPI) {
 	if update.Message == nil {
 		return
 	}
-	
-	if update.Message.IsCommand(){
+	if update.Message.IsCommand() {
 		msgText = HandleCommand(update)
-	}else{
+	} else {
 		msgText = "Ничего не происходит"
 	}
-	
+
 	SendMessage(update.Message.Chat.ID, msgText, bot)
 }
