@@ -1,7 +1,5 @@
 package translate
 
-
-
 import (
 	"context"
 	"fmt"

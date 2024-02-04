@@ -1,9 +1,9 @@
 package translate
 
-
 import (
 	"context"
 	"fmt"
+
 	"cloud.google.com/go/translate"
 	"golang.org/x/text/language"
 )
