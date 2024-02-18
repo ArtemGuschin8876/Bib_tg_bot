@@ -7,5 +7,5 @@ func DetermineTargetLanguage(sourceLanguage string) string {
 	} else if sourceLanguage == "ru" {
 		return "en"
 	}
-	return "" 
+	return ""
 }

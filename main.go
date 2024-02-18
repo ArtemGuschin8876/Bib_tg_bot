@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 	botcreateauth "projects/BIb_bot/bot_create_auth"
@@ -11,14 +10,14 @@ import (
 )
 
 var (
-	msgText string
-	err     error
+	err error
 )
 
 func main() {
+
 	botcreateauth.LoadEnvFile(err)
 
-	token := os.Getenv("TOKEN_BOT")
+	token := os.Getenv("CHECK_BOT")
 
 	bot := botcreateauth.CreateBot(token)
 
@@ -30,18 +29,10 @@ func main() {
 
 	for update := range updates {
 
-		// userID := update.Message.Chat.ID
-
 		handlers.HandleUpdate(update, bot)
-
-		if update.Message.IsCommand() {
-
-			handlers.HandleCommand(update)
-
-		}
-		fmt.Println("4")
-		// handlers.SendMessage(userID, msgText, bot)
-		fmt.Println("5")
+		
 	}
 
 }
+
+

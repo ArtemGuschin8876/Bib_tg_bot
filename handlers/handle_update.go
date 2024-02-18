@@ -1,11 +1,9 @@
 package handlers
 
 import (
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
-)
+	"log"
 
-var (
-	msgText string
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
 func HandleUpdate(update tgbotapi.Update, bot *tgbotapi.BotAPI) {
@@ -14,12 +12,22 @@ func HandleUpdate(update tgbotapi.Update, bot *tgbotapi.BotAPI) {
 	}
 
 	if update.Message.IsCommand() {
+
 		msgText = HandleCommand(update)
+		sendMessageWithoutButtons(bot, update.Message.Chat.ID, msgText)
 	} else {
-		msgText = "Не понимаю"
+
+		HandleButton(update, bot)
+
 	}
 
-	SendMessage(update.Message.Chat.ID, msgText, bot)
 }
 
+func sendMessageWithoutButtons(bot *tgbotapi.BotAPI, chatID int64, text string) {
+	msg := tgbotapi.NewMessage(chatID, text)
 
+	_, err := bot.Send(msg)
+	if err != nil {
+		log.Printf("Error sending message: %v", err)
+	}
+}
