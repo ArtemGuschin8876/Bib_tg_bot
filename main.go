@@ -18,7 +18,7 @@ func main() {
 	botcreateauth.LoadEnvFile(err)
 
 	token := os.Getenv("CHECK_BOT")
-
+	
 	bot := botcreateauth.CreateBot(token)
 
 	log.Printf("Authorized on account %s", bot.Self.UserName)
@@ -27,12 +27,15 @@ func main() {
 	u.Timeout = 60
 	updates := bot.GetUpdatesChan(u)
 
+	userStates := make(map[int64]handlers.UserState)
+
 	for update := range updates {
 
-		handlers.HandleUpdate(update, bot)
+		handlers.HandleUpdate(update, bot, userStates)
 		
 	}
 
 }
 
 
+//После переводенного текста нужно добавить кнопку выход, а если пользователь хочет переводить что то дальше он будет дальше ждать сообщения

@@ -10,32 +10,36 @@ var (
 	msgText string
 )
 
-func CreateMainMenu() tgbotapi.ReplyKeyboardMarkup {
+func createMainMenu() tgbotapi.InlineKeyboardMarkup {
+	trButton := tgbotapi.NewInlineKeyboardButtonData("Переводчик", "/tr")
+	helpButton := tgbotapi.NewInlineKeyboardButtonData("Помощь", "/help")
 
-	helpButton := tgbotapi.NewKeyboardButton("/help")
-
-	keyboard := tgbotapi.NewReplyKeyboard(
-		tgbotapi.NewKeyboardButtonRow(helpButton),
+	keyboard := tgbotapi.NewInlineKeyboardMarkup(
+		tgbotapi.NewInlineKeyboardRow(helpButton),
+		tgbotapi.NewInlineKeyboardRow(trButton),
 	)
 
 	return keyboard
 }
 
 func HandleButton(update tgbotapi.Update, bot *tgbotapi.BotAPI) {
+	text := update.Message.Text
 
-	switch update.Message.Text {
-	case "start":
-		msgText = "Menu"
-		sendMessageWithButtons(bot, update.Message.Chat.ID, msgText, CreateMainMenu())
-	default:
-		msgText = "Тут дефолт"
-		sendMessageWithButtons(bot, update.Message.Chat.ID, msgText, CreateMainMenu())
+	if text == "start" {
+
+		msgText = "Выберите что вас интересует!"
+		sendMessageWithButtons(bot, update.Message.Chat.ID, msgText, createMainMenu())
+
+	} else if text != "" {
+
+		msgText = "Я вас не понимаю, пожалуйста воспользуйтесь меню:)"
+		sendMessageWithButtons(bot, update.Message.Chat.ID, msgText, createMainMenu())
 
 	}
 
 }
 
-func sendMessageWithButtons(bot *tgbotapi.BotAPI, chatID int64, text string, replyMarkup tgbotapi.ReplyKeyboardMarkup) {
+func sendMessageWithButtons(bot *tgbotapi.BotAPI, chatID int64, text string, replyMarkup tgbotapi.InlineKeyboardMarkup) {
 	msg := tgbotapi.NewMessage(chatID, text)
 	msg.ReplyMarkup = replyMarkup
 

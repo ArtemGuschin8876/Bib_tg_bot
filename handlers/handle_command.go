@@ -11,7 +11,7 @@ import (
 
 func HandleCommand(update tgbotapi.Update) string {
 	command := update.Message.Command()
-	
+
 	switch command {
 	case "todo":
 		return "Здесь весь лист"
@@ -27,7 +27,8 @@ func HandleCommand(update tgbotapi.Update) string {
 }
 
 func HandleTranslateCommand(update tgbotapi.Update) string {
-	text := strings.TrimSpace(update.Message.CommandArguments())
+	// text := strings.TrimSpace(update.Message.CommandArguments())
+	text := strings.TrimSpace(update.Message.Text)
 
 	if text == "" {
 		return "Пожалуйста, введите текст для перевода с командой /tr."
@@ -52,6 +53,6 @@ func HandleTranslateCommand(update tgbotapi.Update) string {
 
 	log.Printf("[DEBUG] Переведённый текст: %s", translatedText)
 
-	return fmt.Sprintf("Перевод: \n%s", translatedText)
+	return fmt.Sprintf("Перевод: \n\n%s", translatedText)
 
 }
