@@ -9,13 +9,14 @@ import (
 
 var ()
 
-func LoadEnvFile(err error) {
+func LoadEnvFile() error {
 
-	err = godotenv.Load()
+	err := godotenv.Load()
 
 	if err != nil {
 		log.Fatal("[ERR] Error loading .env file")
 	}
+	return err
 }
 
 func CreateBot(token string) *tgbotapi.BotAPI {
