@@ -56,7 +56,6 @@ func HandleTranslateCommand(update tgbotapi.Update, bot *tgbotapi.BotAPI, userSt
 
 		log.Println("[DEBUG] Ошибка при переводе текста: ", err)
 		errorrMessage := "Произошла ошибка при определении языка текста."
-		fmt.Println("5")
 		SendMessageWithContinueAndFinishButton(bot, chatID, errorrMessage)
 
 		return "", err

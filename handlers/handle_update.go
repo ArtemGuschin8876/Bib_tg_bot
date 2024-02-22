@@ -39,7 +39,7 @@ func HandleUpdate(update tgbotapi.Update, bot *tgbotapi.BotAPI, userStates map[i
 
 			_, err := HandleTranslateCommand(update, bot, userStates)
 			if err != nil {
-				fmt.Println("Вот тут")
+				fmt.Println("Error")
 			}
 
 			userStates[chatID] = UserState{TranslationPrompt: false}
