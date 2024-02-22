@@ -28,12 +28,12 @@ func HandleUpdate(update tgbotapi.Update, bot *tgbotapi.BotAPI, userStates map[i
 
 			chatID := update.Message.Chat.ID
 
-			translatedText := HandleTranslateCommand(update)
+			translatedText := HandleTranslateCommand(update, bot, userStates)
 
 			SendMessageWithoutButtons(bot, chatID, translatedText)
-			
+
 			userStates[chatID] = UserState{TranslationPrompt: false}
-            return
+			return
 		}
 	}
 
@@ -60,15 +60,25 @@ func SendMessageWithoutButtons(bot *tgbotapi.BotAPI, chatID int64, text string) 
 }
 
 func handleCallback(bot *tgbotapi.BotAPI, query *tgbotapi.CallbackQuery, update tgbotapi.Update, userStates map[int64]UserState) {
+	log.Printf("Received callback: %+v", query)
+
+	// chatID := update.Message.Chat.ID
+
 	switch query.Data {
-	case "/help":
+	case "help":
 		msgText := "Здесь все команды"
 		SendMessageWithoutButtons(bot, query.Message.Chat.ID, msgText)
-	case "/tr":
-		// Обработка нажатия кнопки "Перевести текст"
+	case "tr":
 		userStates[query.Message.Chat.ID] = UserState{TranslationPrompt: true}
 		msgText := "Введите текст для перевода:"
 		SendMessageWithoutButtons(bot, query.Message.Chat.ID, msgText)
 
+	case "continue_translation":
+		userStates[query.Message.Chat.ID] = UserState{TranslationPrompt: true}
+		msgText := "Введите текст для перевода:"
+		SendMessageWithoutButtons(bot, query.Message.Chat.ID, msgText)
+	case "finish_translation":
+		msgText = "Меню"
+		sendMessageWithButtons(bot, query.Message.Chat.ID, msgText, createMainMenu())
 	}
 }

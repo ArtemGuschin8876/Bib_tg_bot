@@ -11,8 +11,8 @@ var (
 )
 
 func createMainMenu() tgbotapi.InlineKeyboardMarkup {
-	trButton := tgbotapi.NewInlineKeyboardButtonData("Переводчик", "/tr")
-	helpButton := tgbotapi.NewInlineKeyboardButtonData("Помощь", "/help")
+	trButton := tgbotapi.NewInlineKeyboardButtonData("Переводчик", "tr")
+	helpButton := tgbotapi.NewInlineKeyboardButtonData("Помощь", "help")
 
 	keyboard := tgbotapi.NewInlineKeyboardMarkup(
 		tgbotapi.NewInlineKeyboardRow(helpButton),
@@ -21,6 +21,8 @@ func createMainMenu() tgbotapi.InlineKeyboardMarkup {
 
 	return keyboard
 }
+
+
 
 func HandleButton(update tgbotapi.Update, bot *tgbotapi.BotAPI) {
 	text := update.Message.Text
@@ -47,4 +49,23 @@ func sendMessageWithButtons(bot *tgbotapi.BotAPI, chatID int64, text string, rep
 	if err != nil {
 		log.Printf("Error sending message: %v", err)
 	}
+}
+
+func SendMessageWithContinueAndFinishButton(bot *tgbotapi.BotAPI, chatID int64, text string) {
+    msg := tgbotapi.NewMessage(chatID, text)
+
+    inlineKeyboard := tgbotapi.NewInlineKeyboardMarkup(
+        tgbotapi.NewInlineKeyboardRow(
+            tgbotapi.NewInlineKeyboardButtonData("Продолжить", "continue_translation"),
+            tgbotapi.NewInlineKeyboardButtonData("Закончить", "finish_translation"),
+
+        ),
+    )
+
+    msg.ReplyMarkup = inlineKeyboard
+
+    _, err := bot.Send(msg)
+    if err != nil {
+        log.Printf("Error sending message: %v", err)
+    }
 }
