@@ -14,7 +14,7 @@ import (
 const (
 	updateID           = 0
 	updateTimeout      = 60
-	environmentVarName = "CHECK_BOT"
+	environmentVarName = "TOKEN_BOT"
 )
 
 // Создание бота, апдейты, завершение работы бота
