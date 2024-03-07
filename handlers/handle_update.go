@@ -9,6 +9,7 @@ import (
 
 type UserState struct {
 	TranslationPrompt bool
+	AdminDataPrompt   bool
 }
 
 const (
@@ -16,6 +17,7 @@ const (
 	callbackTranslate = "translate"
 	callbackContinue  = "continue_translation"
 	callbackFinish    = "finish_translation"
+	callbackAdmin     = "admin_data"
 )
 
 // Главный обработчик (команды, кнопки, состояния)
@@ -25,26 +27,15 @@ func HandleUpdate(update tgbotapi.Update, bot *tgbotapi.BotAPI, userStates map[i
 
 		if update.CallbackQuery != nil {
 
-			handleCallback(bot, update.CallbackQuery, update, userStates)
+			handleCallback(bot, update.CallbackQuery, userStates, update)
 		}
 
 		return
 
 	}
 
-	if state, ok := userStates[update.Message.Chat.ID]; ok {
-		if state.TranslationPrompt {
-
-			chatID := update.Message.Chat.ID
-
-			_, err := HandleTranslateCommand(update, bot, userStates)
-			if err != nil {
-				fmt.Println("Error")
-			}
-
-			userStates[chatID] = UserState{TranslationPrompt: false}
-			return
-		}
+	if HandleTranslationPrompt(update, bot, userStates) {
+		return;
 	}
 
 	if update.Message.IsCommand() {
@@ -72,14 +63,13 @@ func SendMessageWithoutButtons(bot *tgbotapi.BotAPI, chatID int64, text string) 
 }
 
 // Обработка ответа от всех кнопок
-func handleCallback(bot *tgbotapi.BotAPI, query *tgbotapi.CallbackQuery, update tgbotapi.Update, userStates map[int64]UserState) {
+func handleCallback(bot *tgbotapi.BotAPI, query *tgbotapi.CallbackQuery, userStates map[int64]UserState, update tgbotapi.Update) {
 	log.Printf("Received callback: %+v", query)
 
 	switch query.Data {
 
 	case callbackInfo:
 		msgText := "Здесь все команды"
-		fmt.Println("2")
 
 		if err := SendMessageWithoutButtons(bot, query.Message.Chat.ID, msgText); err != nil {
 			log.Printf("Error sending message: %v", err)
@@ -89,7 +79,6 @@ func handleCallback(bot *tgbotapi.BotAPI, query *tgbotapi.CallbackQuery, update 
 		msgText := "Введите текст для перевода:"
 
 		userStates[query.Message.Chat.ID] = UserState{TranslationPrompt: true}
-		fmt.Println("3")
 
 		if err := SendMessageWithoutButtons(bot, query.Message.Chat.ID, msgText); err != nil {
 			log.Printf("Error sending message: %v", err)
@@ -97,10 +86,40 @@ func handleCallback(bot *tgbotapi.BotAPI, query *tgbotapi.CallbackQuery, update 
 
 	case callbackFinish:
 		msgText := "Меню"
-		fmt.Println("4")
+		userID := query.Message.From.ID
 
-		if err := sendMessageWithButtons(bot, query.Message.Chat.ID, msgText, createMainMenu()); err != nil {
+		if err := sendMessageWithButtons(bot, query.Message.Chat.ID, msgText, createMainMenu(int(userID))); err != nil {
 			log.Printf("Error sending message: %v", err)
 		}
+
+	case callbackAdmin:
+		msgText := "Данные только для администратора"
+		userID := query.Message.From.ID
+
+		userStates[query.Message.Chat.ID] = UserState{TranslationPrompt: true}
+
+		if err := sendMessageWithButtons(bot, query.Message.Chat.ID, msgText, createMainMenu(int(userID))); err != nil {
+			log.Printf("Error sending message: %v", err)
+		}
+	}
+}
+
+func HandleTranslationPrompt(update tgbotapi.Update, bot *tgbotapi.BotAPI, userStates map[int64]UserState) bool {
+	if state, ok := userStates[update.Message.Chat.ID]; ok {
+		if state.TranslationPrompt {
+
+			chatID := update.Message.Chat.ID
+
+			_, err := HandleTranslateCommand(update, bot, userStates)
+			if err != nil {
+				fmt.Println("Error")
+			}
+
+			userStates[chatID] = UserState{TranslationPrompt: false}
+			return true;
+		}
+		return false;
+	} else {
+		return false;
 	}
 }

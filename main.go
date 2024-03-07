@@ -14,18 +14,19 @@ import (
 const (
 	updateID           = 0
 	updateTimeout      = 60
-	environmentVarName = "TOKEN_BOT"
+	environmentVarName = "CHECK_BOT"
 )
 
 // Создание бота, апдейты, завершение работы бота
 func main() {
-
 	err := botcreateauth.LoadEnvFile()
 	if err != nil {
 		log.Fatalf("Error loading environment variables: %v", err)
 	}
 
 	token := os.Getenv(environmentVarName)
+
+	//
 
 	bot := botcreateauth.CreateBot(token)
 

@@ -11,9 +11,9 @@ import (
 )
 
 const (
-	errMsgEmptyText      = "Пожалуйста, введите текст для перевода с командой /tr."
-	errMsgDetectLanguage = "Произошла ошибка при определении языка текста."
-	errMsgTranslation    = "Произошла ошибка при переводе текста."
+	errMsgEmptyText      = "пожалуйста, введите текст для перевода с командой /tr"
+	errMsgDetectLanguage = "произошла ошибка при определении языка текста"
+	errMsgTranslation    = "произошла ошибка при переводе текста"
 )
 
 // Обработчик команд, возможно эта функция уберётся
@@ -65,7 +65,7 @@ func HandleTranslateCommand(update tgbotapi.Update, bot *tgbotapi.BotAPI, userSt
 
 	translatedText = fmt.Sprintf("Перевод: \n%s", translatedText)
 	SendMessageWithContinueAndFinishButton(bot, chatID, translatedText)
-	// userStates[chatID] = UserState{TranslationPrompt: true}
+	userStates[chatID] = UserState{TranslationPrompt: true}
 
 	return translatedText, nil
 
